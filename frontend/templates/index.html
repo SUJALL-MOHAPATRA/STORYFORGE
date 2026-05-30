@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StoryForge — AI Story Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <div class="noise-overlay"></div>
+  <div class="ink-blot blot-1"></div>
+  <div class="ink-blot blot-2"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">StoryForge</span>
+      </div>
+      <div class="header-status" id="statusBadge">
+        <span class="status-dot"></span>
+        <span class="status-label">Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="workspace">
+
+    <!-- Panel 1: Description -->
+    <section class="panel panel-description" id="panelDescription">
+      <div class="panel-header">
+        <span class="panel-number">01</span>
+        <div class="panel-title-group">
+          <h2 class="panel-title">Story Description</h2>
+          <p class="panel-subtitle">Optional — describe your world, or leave blank for a surprise</p>
+        </div>
+        <div class="panel-tag optional-tag">OPTIONAL</div>
+      </div>
+      <div class="panel-body">
+        <textarea
+          id="descriptionInput"
+          class="story-textarea"
+          placeholder="Describe your story... characters, setting, genre, mood, length. The more vivid your description, the richer the story.
+
+Leave this blank and StoryForge will surprise you with something unexpected.
+
+Example: A long fantasy adventure about a blind cartographer who can see the future of places she maps, set in a dying empire where rivers run backwards..."
+          spellcheck="true"
+        ></textarea>
+        <div class="textarea-footer">
+          <span class="char-count" id="descCount">0 characters</span>
+          <button class="btn-clear" onclick="clearField('descriptionInput', 'descCount')">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 2: Story Output -->
+    <section class="panel panel-story" id="panelStory">
+      <div class="panel-header">
+        <span class="panel-number">02</span>
+        <div class="panel-title-group">
+          <h2 class="panel-title">Story Area</h2>
+          <p class="panel-subtitle">Editable — change anything, then continue</p>
+        </div>
+        <div class="panel-tag generating-tag" id="generatingTag" style="display:none">GENERATING</div>
+      </div>
+      <div class="panel-body">
+        <div class="story-output-wrapper">
+          <textarea
+            id="storyOutput"
+            class="story-textarea story-output"
+            placeholder="Your story will appear here, word by word...
+
+You can edit this text at any time — fix a sentence, change a character's name, add your own writing — then click Continue to let the AI carry on from wherever you left it."
+            spellcheck="true"
+            oninput="onStoryEdit()"
+          ></textarea>
+          <div class="cursor-blink" id="cursorBlink" style="display:none">▋</div>
+        </div>
+        <div class="textarea-footer">
+          <span class="char-count" id="storyCount">0 characters</span>
+          <span class="word-count" id="wordCount">0 words</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <div class="controls-left">
+        <button class="btn-primary" id="btnGenerate" onclick="handleGenerate()">
+          <span class="btn-icon">◆</span>
+          <span class="btn-label">Generate Story</span>
+        </button>
+        <button class="btn-danger" id="btnStop" onclick="stopGeneration()" style="display:none">
+          <span class="btn-icon">■</span>
+          <span class="btn-label">Stop</span>
+        </button>
+      </div>
+      <div class="controls-right">
+        <button class="btn-ghost" onclick="copyStory()">Copy Story</button>
+        <button class="btn-ghost" onclick="downloadStory()">Download</button>
+        <button class="btn-ghost danger" onclick="clearAll()">Clear All</button>
+      </div>
+    </div>
+
+    <!-- Panel 3: What Next -->
+    <section class="panel panel-next" id="panelNext">
+      <div class="panel-header">
+        <span class="panel-number">03</span>
+        <div class="panel-title-group">
+          <h2 class="panel-title">What Should Happen Next?</h2>
+          <p class="panel-subtitle">Optional — steer the story's direction</p>
+        </div>
+        <div class="panel-tag optional-tag">OPTIONAL</div>
+      </div>
+      <div class="panel-body">
+        <textarea
+          id="whatNextInput"
+          class="story-textarea what-next-textarea"
+          placeholder="Give the AI a nudge for what comes next...
+
+Examples:
+— The protagonist discovers a hidden letter
+— Introduce a mysterious stranger at the tavern
+— Jump forward three years in time
+— The mood should become darker and more tense"
+          spellcheck="true"
+        ></textarea>
+        <div class="textarea-footer">
+          <span class="char-count" id="nextCount">0 characters</span>
+          <button class="btn-clear" onclick="clearField('whatNextInput', 'nextCount')">Clear</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
