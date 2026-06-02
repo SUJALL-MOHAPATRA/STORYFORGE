@@ -28,119 +28,173 @@
     </div>
   </header>
 
-  <main class="workspace">
+  <div class="app-body">
 
-    <!-- Panel 1: Description -->
-    <section class="panel panel-description" id="panelDescription">
-      <div class="panel-header">
-        <span class="panel-number">01</span>
-        <div class="panel-title-group">
-          <h2 class="panel-title">Story Description</h2>
-          <p class="panel-subtitle">Optional — describe your world, or leave blank for a surprise</p>
+    <!-- ── MAIN COLUMN ── -->
+    <main class="workspace">
+
+      <!-- Panel 1: Description -->
+      <section class="panel panel-description">
+        <div class="panel-header">
+          <span class="panel-number">01</span>
+          <div class="panel-title-group">
+            <h2 class="panel-title">Story Description</h2>
+            <p class="panel-subtitle">Optional — describe your world, or leave blank for a surprise</p>
+          </div>
+          <div class="panel-tag optional-tag">OPTIONAL</div>
         </div>
-        <div class="panel-tag optional-tag">OPTIONAL</div>
-      </div>
-      <div class="panel-body">
-        <textarea
-          id="descriptionInput"
-          class="story-textarea"
-          placeholder="Describe your story... characters, setting, genre, mood, length. The more vivid your description, the richer the story.
+        <div class="panel-body">
+          <textarea
+            id="descriptionInput"
+            class="story-textarea"
+            placeholder="Describe your story... characters, setting, genre, mood, length. The more vivid your description, the richer the story.
 
 Leave this blank and StoryForge will surprise you with something unexpected.
 
 Example: A long fantasy adventure about a blind cartographer who can see the future of places she maps, set in a dying empire where rivers run backwards..."
-          spellcheck="true"
-        ></textarea>
-        <div class="textarea-footer">
-          <span class="char-count" id="descCount">0 characters</span>
-          <button class="btn-clear" onclick="clearField('descriptionInput', 'descCount')">Clear</button>
+            spellcheck="true"
+          ></textarea>
+          <div class="textarea-footer">
+            <span class="char-count" id="descCount">0 characters</span>
+            <button class="btn-clear" onclick="clearField('descriptionInput', 'descCount')">Clear</button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Panel 2: Story Output -->
-    <section class="panel panel-story" id="panelStory">
-      <div class="panel-header">
-        <span class="panel-number">02</span>
-        <div class="panel-title-group">
-          <h2 class="panel-title">Story Area</h2>
-          <p class="panel-subtitle">Editable — change anything, then continue</p>
+      <!-- Panel 2: Story Output -->
+      <section class="panel panel-story">
+        <div class="panel-header">
+          <span class="panel-number">02</span>
+          <div class="panel-title-group">
+            <h2 class="panel-title">Your Story</h2>
+            <p class="panel-subtitle">Editable — change anything, then continue</p>
+          </div>
+          <div class="panel-tag generating-tag" id="generatingTag" style="display:none">GENERATING</div>
         </div>
-        <div class="panel-tag generating-tag" id="generatingTag" style="display:none">GENERATING</div>
-      </div>
-      <div class="panel-body">
-        <div class="story-output-wrapper">
-          <textarea
-            id="storyOutput"
-            class="story-textarea story-output"
-            placeholder="Your story will appear here, word by word...
+        <div class="panel-body">
+          <div class="story-output-wrapper">
+            <textarea
+              id="storyOutput"
+              class="story-textarea story-output"
+              placeholder="Your story will appear here, word by word...
 
 You can edit this text at any time — fix a sentence, change a character's name, add your own writing — then click Continue to let the AI carry on from wherever you left it."
-            spellcheck="true"
-            oninput="onStoryEdit()"
-          ></textarea>
-          <div class="cursor-blink" id="cursorBlink" style="display:none">▋</div>
+              spellcheck="true"
+              oninput="onStoryEdit()"
+            ></textarea>
+            <div class="cursor-blink" id="cursorBlink" style="display:none">▋</div>
+          </div>
+          <div class="textarea-footer">
+            <span class="char-count" id="storyCount">0 characters</span>
+            <span class="word-count" id="wordCount">0 words</span>
+            <span class="autosave-indicator" id="autosaveIndicator"></span>
+          </div>
         </div>
-        <div class="textarea-footer">
-          <span class="char-count" id="storyCount">0 characters</span>
-          <span class="word-count" id="wordCount">0 words</span>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Controls Bar -->
-    <div class="controls-bar">
-      <div class="controls-left">
-        <button class="btn-primary" id="btnGenerate" onclick="handleGenerate()">
-          <span class="btn-icon">◆</span>
-          <span class="btn-label">Generate Story</span>
-        </button>
-        <button class="btn-danger" id="btnStop" onclick="stopGeneration()" style="display:none">
-          <span class="btn-icon">■</span>
-          <span class="btn-label">Stop</span>
-        </button>
-      </div>
-      <div class="controls-right">
-        <button class="btn-ghost" onclick="copyStory()">Copy Story</button>
-        <button class="btn-ghost" onclick="downloadStory()">Download</button>
-        <button class="btn-ghost danger" onclick="clearAll()">Clear All</button>
-      </div>
-    </div>
-
-    <!-- Panel 3: What Next -->
-    <section class="panel panel-next" id="panelNext">
-      <div class="panel-header">
-        <span class="panel-number">03</span>
-        <div class="panel-title-group">
-          <h2 class="panel-title">What Should Happen Next?</h2>
-          <p class="panel-subtitle">Optional — steer the story's direction</p>
+      <!-- Controls Bar -->
+      <div class="controls-bar">
+        <div class="controls-left">
+          <button class="btn-primary" id="btnGenerate" onclick="handleGenerate()">
+            <span class="btn-icon">◆</span>
+            <span class="btn-label">Generate Story</span>
+          </button>
+          <button class="btn-danger" id="btnStop" onclick="stopGeneration()" style="display:none">
+            <span class="btn-icon">■</span>
+            <span class="btn-label">Stop</span>
+          </button>
+          <button class="btn-secondary" id="btnUndo" onclick="undoGeneration()" disabled>
+            <span class="btn-icon">↩</span>
+            <span class="btn-label">Undo</span>
+          </button>
         </div>
-        <div class="panel-tag optional-tag">OPTIONAL</div>
+        <div class="controls-right">
+          <button class="btn-ghost" onclick="copyStory()">Copy Story</button>
+          <button class="btn-ghost" onclick="exportToPDF()">Export PDF</button>
+          <button class="btn-ghost" onclick="saveSession()">Save Session</button>
+          <button class="btn-ghost" onclick="triggerLoadSession()">Load Session</button>
+          <button class="btn-ghost danger" onclick="clearAll()">Clear All</button>
+        </div>
       </div>
-      <div class="panel-body">
-        <textarea
-          id="whatNextInput"
-          class="story-textarea what-next-textarea"
-          placeholder="Give the AI a nudge for what comes next...
+
+      <!-- Hidden file input -->
+      <input type="file" id="loadFileInput" accept=".json" style="display:none" onchange="loadSession(event)" />
+
+      <!-- Panel 3: What Next -->
+      <section class="panel panel-next">
+        <div class="panel-header">
+          <span class="panel-number">03</span>
+          <div class="panel-title-group">
+            <h2 class="panel-title">What Should Happen Next?</h2>
+            <p class="panel-subtitle">Optional — steer the story's direction</p>
+          </div>
+          <div class="panel-tag optional-tag">OPTIONAL</div>
+        </div>
+        <div class="panel-body">
+          <textarea
+            id="whatNextInput"
+            class="story-textarea what-next-textarea"
+            placeholder="Give the AI a nudge for what comes next...
 
 Examples:
 — The protagonist discovers a hidden letter
 — Introduce a mysterious stranger at the tavern
 — Jump forward three years in time
 — The mood should become darker and more tense"
-          spellcheck="true"
-        ></textarea>
-        <div class="textarea-footer">
-          <span class="char-count" id="nextCount">0 characters</span>
-          <button class="btn-clear" onclick="clearField('whatNextInput', 'nextCount')">Clear</button>
+            spellcheck="true"
+          ></textarea>
+          <div class="textarea-footer">
+            <span class="char-count" id="nextCount">0 characters</span>
+            <button class="btn-clear" onclick="clearField('whatNextInput', 'nextCount')">Clear</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+
+      <!-- Character Tracker -->
+      <div class="sidebar-panel" id="characterPanel">
+        <div class="sidebar-panel-header">
+          <span class="sidebar-panel-title">Characters</span>
+          <span class="sidebar-panel-tag">AUTO</span>
+        </div>
+        <div class="sidebar-panel-body" id="characterList">
+          <p class="sidebar-empty">Characters detected in the story will appear here.</p>
         </div>
       </div>
-    </section>
 
-  </main>
+      <!-- Story Summary Panel -->
+      <div class="sidebar-panel" id="summaryPanel">
+        <div class="sidebar-panel-header">
+          <span class="sidebar-panel-title">Story Summary</span>
+          <button class="btn-sidebar-action" id="btnStorySummary" onclick="generateStorySummary()">
+            Summarize
+          </button>
+        </div>
+        <div class="sidebar-panel-body" id="storySummaryContent">
+          <p class="sidebar-empty">Click Summarize to get a running summary of your story so far.</p>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- Custom context menu -->
+  <div class="context-menu" id="contextMenu" style="display:none">
+    <button class="context-menu-item" onclick="rewriteSelection()">
+      <span class="context-menu-icon">✎</span>
+      Rewrite this
+    </button>
+  </div>
 
   <div class="toast" id="toast"></div>
 
-  <script src="/static/js/app.js"></script>
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="/static/js/app.js?v=6"></script>
 </body>
 </html>

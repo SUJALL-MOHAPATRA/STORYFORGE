@@ -21,3 +21,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Personal notes
+notes.txt
