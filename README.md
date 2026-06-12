@@ -1,6 +1,6 @@
 # ✦ StoryForge — AI Story Generator
 
-A local AI-powered story generator with streaming output, fully editable interfaces, and intelligent story continuation.
+A locally-hosted AI-powered story generator with real-time streaming, fully editable interfaces, automatic summaries, character tracking, and intelligent story continuation.
 
 ---
 
@@ -32,54 +32,96 @@ The browser will open automatically at http://localhost:8000
 ## 📁 Project Structure
 
 ```
-story-generator/
+STORYFORGE/
 │
 ├── backend/
-│   └── main.py              ← FastAPI server + AI logic
+│   └── main.py                  ← FastAPI server + all AI endpoints
 │
 ├── frontend/
 │   ├── templates/
-│   │   └── index.html       ← Main UI page
+│   │   └── index.html           ← Main UI page
 │   └── static/
-│       ├── css/style.css    ← All styling
-│       └── js/app.js        ← Frontend logic & streaming
+│       ├── css/style.css        ← All styling
+│       └── js/app.js            ← Frontend logic & streaming
 │
 ├── config/
-│   └── .env                 ← Your API key goes here (KEEP SECRET)
+│   ├── .env                     ← Your API key goes here (KEEP SECRET, git-ignored)
+│   └── .env.example             ← Safe template for reference
 │
-├── requirements.txt         ← Python packages
-├── start.bat                ← One-click launcher (Windows)
-└── README.md                ← This file
+├── requirements.txt             ← Python packages
+├── render.yaml                  ← Render deployment config
+├── start.bat                    ← One-click launcher (Windows)
+└── README.md                    ← This file
 ```
 
 ---
 
 ## 🎮 How to Use
 
-### The Three Panels:
+### The Three Panels
 
-**Panel 01 — Story Description**
-Describe your story: characters, setting, genre, length, mood.
-This acts as the AI's permanent context throughout generation.
+**Panel 01 — Story Description** *(Optional)*
+Describe your story — characters, setting, genre, length, mood.
+Leave it blank and StoryForge will generate something unexpected.
 
 **Panel 02 — Your Story**
-The story appears here word by word.
-**You can edit this at any time** — fix sentences, add your own writing, change character names — then click Continue to let the AI carry on from wherever you left it.
+The story appears here word by word as it generates.
+You can edit this at any time — fix sentences, add your own writing, change character names — then click Continue to let the AI carry on from wherever you left it.
 
-**Panel 03 — What Should Happen Next? (Optional)**
+**Panel 03 — What Should Happen Next?** *(Optional)*
 Give the AI a direction hint before generating or continuing.
-This is cleared after each use so you can set a new direction each time.
+The prompt is retained after each use so you can keep steering.
 
-### Buttons:
-- **Generate Story** — Start fresh from your description
-- **Continue** — Continue from current story content (even if you edited it)
-- **Stop** — Stop generation mid-way (the story stays as-is, ready to edit/continue)
-- **Copy Story** — Copies story text to clipboard
-- **Download** — Saves story as a .txt file
+### Buttons
 
-### Keyboard Shortcuts:
-- `Ctrl + Enter` → Generate or Continue
-- `Escape` → Stop generation
+| Button | Action |
+|--------|--------|
+| **Generate Story** | Start fresh — appears when story area is empty |
+| **Continue** | Continue from current content — appears when story has text |
+| **Stop** | Stop generation mid-way, story stays as-is |
+| **Undo (N)** | Roll back to state before last generation, N = undos available |
+| **Copy Story** | Copy clean story text to clipboard |
+| **Export PDF** | Download formatted A4 PDF with description and page numbers |
+| **Save Session** | Download full session as .json file |
+| **Load Session** | Restore a previously saved .json session |
+| **Clear All** | Wipe everything and start fresh |
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl + Enter` | Generate Story or Continue |
+| `Ctrl + Z` | Undo last generation |
+| `Escape` | Stop generation |
+
+### Right-Click — Rewrite Selection
+Select any passage in the story area → right-click → **Rewrite this**
+The AI rewrites just that selection while keeping everything else untouched.
+
+---
+
+## 🧠 Smart Features
+
+### Automatic Inline Summaries
+Every 2000 story words, StoryForge automatically generates a compressed summary block and appends it to the story:
+```
+--- SUMMARY_1 ---
+...summary of story so far...
+--- END SUMMARY_1 ---
+```
+These blocks are visible and editable. The AI uses all summaries as context when continuing, preventing coherence loss in long stories. Summaries are automatically stripped from PDF exports.
+
+### Character Tracker (Sidebar)
+After each generation, named characters are automatically detected and listed in the sidebar. Click any character to add notes — appearance, personality, role — and the AI will keep them consistent in future generations.
+
+### Story Summary Panel (Sidebar)
+Click **Summarize** in the sidebar to get a 10–20 sentence overview of everything that has happened in the story so far. Useful for long sessions.
+
+### Autosave
+The current session is automatically saved to browser localStorage every 30 seconds and after every generation. If you close or refresh the browser accidentally, StoryForge will offer to restore your session on next load.
+
+### Undo System
+Before every generation or rewrite, the full state is saved to an undo stack (up to 10 states). Click **Undo** or press `Ctrl+Z` to roll back anytime.
 
 ---
 
@@ -91,6 +133,7 @@ MODEL=llama-3.1-8b-instant
 ```
 
 Available free Groq models:
+
 | Model | Quality | Speed |
 |-------|---------|-------|
 | llama-3.3-70b-versatile | ⭐⭐⭐⭐⭐ Best | Fast |
@@ -101,33 +144,58 @@ Available free Groq models:
 
 ## 🛠 Manual Start (if start.bat doesn't work)
 
-Open a terminal/command prompt in the project folder:
+Open a terminal in the project folder:
 ```bash
 pip install -r requirements.txt
 cd backend
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 Then open http://localhost:8000 in your browser.
+
+### PyCharm Run Configuration
+- **Mode:** Module
+- **Module name:** `uvicorn`
+- **Parameters:** `main:app --host 0.0.0.0 --port 8000 --reload`
+- **Working directory:** `<project root>/backend`
+- **Paths to .env:** `<project root>/config/.env`
+
+---
+
+## ☁️ Deployment (Render)
+
+StoryForge is configured for deployment on [Render](https://render.com):
+
+1. Push repo to GitHub
+2. Create a new **Web Service** on Render, connect your repo
+3. Render auto-detects `render.yaml` and fills settings
+4. Add `GROQ_API_KEY` as an environment variable in the Render dashboard
+5. Deploy — you'll get a live URL like `https://storyforge-xxxx.onrender.com`
+
+> **Note:** Free tier on Render sleeps after 15 minutes of inactivity. First request after sleep takes ~30 seconds to wake up.
 
 ---
 
 ## 🔒 Privacy
-- Your API key is stored only in `config/.env` on your machine
-- Stories are never saved unless you download them
-- No data is sent anywhere except to Groq's API for generation
+
+- API key is stored only in `config/.env` locally, or as an environment variable on Render — never in code
+- Stories are never stored server-side — all data stays in your browser (localStorage) unless you manually save a session file
+- All AI calls go to Groq's API only
 
 ---
 
 ## ❓ Troubleshooting
 
 **"API key not set" error**
-→ Check config/.env — make sure there are no spaces around the `=`
+→ Check `config/.env` — make sure there are no spaces around the `=`
+
+**Button not responding / old behaviour after update**
+→ Hard refresh: `Ctrl + Shift + R` in browser
 
 **Browser doesn't open automatically**
 → Manually go to http://localhost:8000
 
 **Generation is slow**
-→ Try switching to `llama-3.1-8b-instant` in config/.env
+→ Switch to `llama-3.1-8b-instant` in `config/.env`
 
 **"Connection error"**
-→ Check your internet connection; Groq requires internet access
+→ Check your internet connection — Groq requires internet access
